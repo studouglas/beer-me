@@ -1,45 +1,69 @@
-const HTTP_STATUS_OK = 200;
+'use strict';
+
+var HTTP_STATUS_OK = 200;
 var storeId = 511;
-var lcboApiKey = "";
-var availableBeers = [];
+var lcboApiKey = '';
+var totalPages = 0;
+var pagesTried = [];
 
 function beerMeClicked() {
-    // get private api key from server, then get list of all beers at storeId
+    // get private api key from server
+    loadApiKey();
+
+    // load first page to get total num pages, then try random pages until new beer found
+    $.ajax({
+        url: 'https://lcboapi.com/stores/' + storeId + '/products?page=1',
+        headers: { 'Authorization': 'Token ' + lcboApiKey }
+    }).then(function (jsonResponse) {
+        totalPages = jsonResponse.pager.total_pages;
+        tryRandomPage();
+    });
+}
+
+function loadApiKey() {
     $.ajax({
         type: 'GET',
         url: 'lcbo_api_key.php'
     }).then(function (data) {
-        var lcboApiKey = data; 
-        $.ajax({
-            url: 'https://lcboapi.com/stores/' + storeId + '/products?page=1',
-            headers: { 'Authorization': 'Token ' + lcboApiKey }
-        }).then(function (jsonResponse) {
-            receivedBeersFromServer(jsonResponse);
-            for (i = 2; i <= jsonResponse.pager.total_pages; i++) {
-                addPageOfBeers(i);
-            }
-            console.log(availableBeers);
-        });
+        lcboApiKey = data;
     });
 }
 
-function receivedBeersFromServer(jsonResponse) {
-    if (jsonResponse.status != HTTP_STATUS_OK) {
+function tryRandomPage() {
+    var randomPage = Math.floor((Math.random() * totalPages) + 1);
+    console.log('Trying page ' + randomPage + ' out of ' + totalPages);
+    $.ajax({
+        url: 'https://lcboapi.com/stores/' + storeId + '/products?page=' + randomPage,
+        headers: { 'Authorization': 'Token ' + lcboApiKey },
+        success: checkResponseForFreshBeer
+    });
+}
+
+function checkResponseForFreshBeer(jsonResponse) {
+    var i = 0;
+    if (jsonResponse.status !== HTTP_STATUS_OK) {
         console.log(jsonResponse.message);
-        exit();
+        return;
     }
-    if (jsonResponse.result == null) {
-        console.log("No beers found at store " + storeId);
-        exit();
+    if (jsonResponse.result === null) {
+        console.log('No beers found at store ' + storeId);
+        return;
     }
     
-    availableBeers += jsonResponse.result;
+    for (i = 0; i < jsonResponse.result.length; i += 1) {
+        if (jsonResponse.result[i].primary_category === 'Beer') {
+            foundFreshBeer(jsonResponse.result[i]);
+            return;
+        }
+    }
+    
+    tryRandomPage();
 }
 
-function addPageOfBeers(pageNumber) {
-    $.ajax({
-        url: 'https://lcboapi.com/stores/' + storeId + '/products?page=' + pageNumber,
-        headers: { 'Authorization': 'Token ' + lcboApiKey },
-        success: receivedBeersFromServer
-    });
+function foundFreshBeer(productJson) {
+    console.log(productJson.name);
+    $('#beer-name')[0].innerHTML = productJson.name;
+    $('#beer-caption')[0].innerHTML = '$' + productJson.price_in_cents / 100 + ' / ' + productJson.package_unit_type;
+    $('#beer-caption')[0].innerHTML += ', ' + productJson.alcohol_content / 100 + '% alcohol';
+    $('#beer-img')[0].src = productJson.image_url;
 }
