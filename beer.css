@@ -1,0 +1,31 @@
+/***********************************************
+* Standardize 
+***********************************************/
+body {
+    margin: 0;
+    padding: 0;
+}
+* {
+    box-sizing: border-box;
+}
+
+/***********************************************
+* Layout 
+***********************************************/
+.header-banner {
+    display: block;
+    height: 2.5em;
+    width: 100%;
+    padding: 0.75em 30px;
+    background-color: #7dd89d;
+}
+
+/***********************************************
+* Text
+***********************************************/
+body {
+    font-family: 'Source Sans', Helvetica, Arial, sans-serif;
+}
+a {
+    text-decoration: none;
+}
