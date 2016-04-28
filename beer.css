@@ -1,23 +1,12 @@
 /***********************************************
 * Standardize 
 ***********************************************/
-body {
+body, p {
     margin: 0;
     padding: 0;
 }
 * {
     box-sizing: border-box;
-}
-
-/***********************************************
-* Layout 
-***********************************************/
-.header-banner {
-    display: block;
-    height: 2.5em;
-    width: 100%;
-    padding: 0.75em 30px;
-    background-color: #7dd89d;
 }
 
 /***********************************************
@@ -28,4 +17,56 @@ body {
 }
 a {
     text-decoration: none;
+}
+
+/***********************************************
+* Layout 
+***********************************************/
+.header-banner {
+    display: block;
+    height: 2.5em;
+    width: 100%;
+    padding: 0.75em 30px;
+    background-color: #8ff0c4;
+}
+.beer-me-container {
+    width: 400px;
+    margin: 50px auto;
+    background-color: #c2f4f4;
+    padding: 20px;
+    border-radius: 5px;
+}
+#beer-img {
+    display: block;
+    margin: 0 auto;
+    width: 90%;
+}
+#beer-name {
+    text-align: center;
+}
+#beer-caption {
+    margin: 5px 0 20px;
+    text-align: center;
+}
+
+/***********************************************
+* Button 
+***********************************************/
+.highlighted-button {
+    width: 80%;
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 22px;
+    line-height: 1.75em;
+    border-radius: 3px;
+    background-color: #8ff0c4;
+    color: #388165;
+    border: 3px solid #388165;
+}
+.highlighted-button:hover {
+    cursor: pointer;
+    background-color: #87d4b1;
+    color: #555555;
+    border-color: #555555;
 }
