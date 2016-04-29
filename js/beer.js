@@ -2,6 +2,7 @@
 
 var LCBO_API_KEY = 'MDoxMTljMTZhNi0wZDg3LTExZTYtOWMxYi0xZjczNjZmZmI3NDc6aGlpbW5qa0FvRHFIVG1pSEhvdFRhQTBWdlFya3JVek90Q1pN';
 var storeId = 511;
+var isFeelingTurnt = false;
 
 // try each page once, in a random order until fresh beer found or no pages left
 var pageOrder = [];
@@ -69,6 +70,7 @@ function checkResponseForFreshBeer(jsonResponse) {
     for (var i = 0; i < jsonResponse.result.length; i += 1) {
         if (jsonResponse.result[i].primary_category === 'Beer'
                 && jsonResponse.result[i].quantity > 0
+                && (!isFeelingTurnt || jsonResponse.result[i].alcohol_content >= 650)
                 && triedBeers[jsonResponse.result[i].name] !== true) {
             foundFreshBeer(jsonResponse.result[i]);
             return;
@@ -104,6 +106,10 @@ function resetTriedBeers() {
         localStorage.removeItem('triedBeers');
         triedBeers = { };
     }
+}
+
+function turntCheckboxChanged(sender) {
+    isFeelingTurnt = sender.checked;
 }
 
 function showLoadingSpinner() {

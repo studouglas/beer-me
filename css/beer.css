@@ -1,7 +1,7 @@
 /***********************************************
 * Standardize 
 ***********************************************/
-body, p {
+body, p, h1, h2, h3, h4, h5, h6 {
     margin: 0;
     padding: 0;
 }
@@ -24,6 +24,15 @@ a {
 ***********************************************/
 html {
     background-color: #e3e4f0;
+}
+.float-left {
+    float: left;
+}
+.float-right {
+    float: right;
+}
+.full-width {
+    width: 100%;
 }
 .header-banner {
     display: block;
@@ -76,14 +85,9 @@ html {
     width: 50px;
     margin: 0 auto;
 }
-.float-left {
-    float: left;
-}
-.float-right {
-    float: right;
-}
-.full-width {
-    width: 100%;
+.checkbox-text {
+/*    margin-bottom: 10px;*/
+    font-size: 18px;
 }
 
 /***********************************************
@@ -92,7 +96,7 @@ html {
 .highlighted-button {
     width: 100%;
     display: block;
-    margin: 0 auto;
+    margin: 15px auto 0;
     text-align: center;
     font-size: 22px;
     line-height: 1.75em;
@@ -113,4 +117,9 @@ html {
     border: 2px solid #bbb;
     display: inline-block;
     padding: 5px;
+}
+
+.light-text {
+    color: #aaa;
+    font-size: 14px;
 }
