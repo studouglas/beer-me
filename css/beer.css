@@ -18,6 +18,13 @@ h1, h2, h3, h4, h5, h6, p, a {
 a {
     text-decoration: none;
 }
+.light-text {
+    color: #aaa;
+    font-size: 14px;
+}
+.red-text {
+    color: #bc2222;
+}
 
 /***********************************************
 * Layout 
@@ -85,10 +92,6 @@ html {
     width: 50px;
     margin: 0 auto;
 }
-.checkbox-text {
-/*    margin-bottom: 10px;*/
-    font-size: 18px;
-}
 
 /***********************************************
 * Button 
@@ -117,9 +120,4 @@ html {
     border: 2px solid #bbb;
     display: inline-block;
     padding: 5px;
-}
-
-.light-text {
-    color: #aaa;
-    font-size: 14px;
 }

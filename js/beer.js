@@ -1,4 +1,6 @@
 'use strict';
+var LOW_QUANTITY_THRESHOLD = 5; // if at most 5 beers remain, 
+var HIGH_ALCOHOL_PERCENTAGE = 650; // anything at least 6.5% is considered high alcohol
 
 var LCBO_API_KEY = 'MDoxMTljMTZhNi0wZDg3LTExZTYtOWMxYi0xZjczNjZmZmI3NDc6aGlpbW5qa0FvRHFIVG1pSEhvdFRhQTBWdlFya3JVek90Q1pN';
 var storeId = 511;
@@ -89,11 +91,14 @@ function foundFreshBeer(productJson) {
         localStorage.setItem('triedBeers', localStorage.getItem('triedBeers') + ',' + productJson.name);    
     }
     
+    var redIfLowQuantity = productJson.quantity <= LOW_QUANTITY_THRESHOLD ? ' red-text' : '';
+    var redIfHighAlcohol = productJson.alcohol_content >= HIGH_ALCOHOL_PERCENTAGE ? ' red-text' : '';
+    
     // update UI with beer info and photo
     $('#beer-name')[0].innerHTML = productJson.name;
-    $('#beer-caption')[0].innerHTML = '<span class="float-left">$' + (productJson.price_in_cents / 100).toFixed(2) + "</span>";
-    $('#beer-caption')[0].innerHTML += '&nbsp;<span class="float-right">' + productJson.alcohol_content / 100 + '% alcohol</span>';
-    $('#beer-img')[0].innerHTML = "";
+    $('#beer-caption')[0].innerHTML = '<span class="float-left' + redIfLowQuantity + '">' + productJson.quantity + ' in stock</span>&nbsp;';
+    $('#beer-caption')[0].innerHTML += '<span class="float-right' + redIfHighAlcohol + '">' + productJson.alcohol_content / 100 + '% alcohol</span>';
+    $('#beer-img')[0].innerHTML = '';
     if (productJson.image_url !== null) {
         $('#beer-img')[0].innerHTML = '<img src="' + productJson.image_url + '" class="full-width" alt="' + productJson.name + '">';
     }
@@ -102,7 +107,7 @@ function foundFreshBeer(productJson) {
 }
 
 function resetTriedBeers() {
-    if (confirm("Are you sure you want to reset all beers you've previously tried?")) {
+    if (confirm('Are you sure you want to reset all beers you\'ve previously tried?')) {
         localStorage.removeItem('triedBeers');
         triedBeers = { };
     }
