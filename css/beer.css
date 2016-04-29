@@ -62,7 +62,9 @@ html {
     margin: 0 auto;
     width: 280px;
     height: 372px;
-    background-image: url(../images/beer_icon.png);
+    background-image: url(../images/beer_icon.png); /* CC icons8.com */
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
     border: none;
 }
 #beer-name {
