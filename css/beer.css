@@ -65,6 +65,7 @@ html {
     background-color: rgba(224, 224, 224, 0.97);
     z-index: 1000;
     border-radius: 5px;
+    visibility: hidden;
 }
 #loading-text {
     text-align: center;

@@ -1,66 +1,66 @@
 'use strict';
 
+var LCBO_API_KEY = 'MDoxMTljMTZhNi0wZDg3LTExZTYtOWMxYi0xZjczNjZmZmI3NDc6aGlpbW5qa0FvRHFIVG1pSEhvdFRhQTBWdlFya3JVek90Q1pN';
 var storeId = 511;
-var lcboApiKey = '';
-var totalPages = 0;
-var pagesTried = [];
 
-// objects keys are hashed in js, so have one property per tried beer for O(1)-ish lookup
+// try each page once, in a random order until fresh beer found or no pages left
+var pageOrder = [];
+var currentPageIndex = 0;
+
+// objects keys are hashed in JS, so have one property per tried beer for fast lookup
 // e.g. { 'beer1: true','beer2': true ... }
 var triedBeers = { }; 
-
-$(document).ready(function () {
-   hideLoadingSpinner(); 
-});
 
 // finds a random beer that hasn't been tried yet
 function beerMeClicked() {
     showLoadingSpinner();
     
-    $.ajax({
-        type: 'GET',
-        url: 'lcbo_api_key.php'
-    }).then(function (data) {
-        lcboApiKey = data;
-
-        // load tried beers from local browser cache
-        if (localStorage.getItem('triedBeers') !== null) {
-            var triedBeersArr = localStorage.getItem('triedBeers').split(',');
-            for (var i = 0; i < triedBeersArr.length; i += 1) {
-                triedBeers[triedBeersArr[i]] = true;
-            }
+    // load tried beers from local browser cache
+    if (localStorage.getItem('triedBeers') !== null) {
+        var triedBeersArr = localStorage.getItem('triedBeers').split(',');
+        for (var i = 0; i < triedBeersArr.length; i += 1) {
+            triedBeers[triedBeersArr[i]] = true;
         }
+    }
 
-        // load first page to get total num pages, then try random pages until new beer found
-        $.ajax({
-            url: 'https://lcboapi.com/stores/' + storeId + '/products?page=1',
-            headers: { 'Authorization': 'Token ' + lcboApiKey }
-        }).then(function (jsonResponse) {
-            totalPages = jsonResponse.pager.total_pages;
-            tryRandomPage();
-        });
+    // load first page to get total num pages, then try random pages until new beer found
+    $.ajax({
+        url: 'https://lcboapi.com/stores/' + storeId + '/products?page=1',
+        headers: { 'Authorization': 'Token ' + LCBO_API_KEY }
+    }).then(function (jsonResponse) {
+        // randomize order of pages to try
+        pageOrder = new Array(jsonResponse.pager.total_pages);
+        for (var i = 0; i < jsonResponse.pager.total_pages; i += 1) {
+            pageOrder[i] = i+1; // pages ordered 1...totalPages
+        }
+        shuffleArray(pageOrder);
+        
+        tryNextRandomPage();
     });
 }
 
 // fetches products from a random page, when done check for a new one
-function tryRandomPage() {
-    var randomPage = Math.floor((Math.random() * totalPages) + 1);
-    console.log('Trying page ' + randomPage + ' out of ' + totalPages);
+function tryNextRandomPage() {
+    if (currentPageIndex === pageOrder.length) {
+        alert('You\'ve tried all the beers! Try resetting your them using the button in the top right.');
+    }
+
     $.ajax({
-        url: 'https://lcboapi.com/stores/' + storeId + '/products?page=' + randomPage,
-        headers: { 'Authorization': 'Token ' + lcboApiKey },
+        url: 'https://lcboapi.com/stores/' + storeId + '/products?page=' + pageOrder[currentPageIndex],
+        headers: { 'Authorization': 'Token ' + LCBO_API_KEY },
         success: checkResponseForFreshBeer
     });
+    currentPageIndex += 1;
 }
 
 // takes page of products and check if any are beers that haven't been tried yet
 function checkResponseForFreshBeer(jsonResponse) {
     if (jsonResponse.status !== 200) {
-        console.log(jsonResponse.message);
+        alert('An error occured looking up beers. ' + jsonResponse.message);
         return;
     }
     if (jsonResponse.result === null) {
-        console.log('No beers found at store ' + storeId);
+        alert('No beers found at store ' + storeId + '.');
         return;
     }
     
@@ -75,12 +75,11 @@ function checkResponseForFreshBeer(jsonResponse) {
         }
     }
     
-    tryRandomPage();
+    tryNextRandomPage();
 }
 
 // update UI with our new beer, and some stats about it
 function foundFreshBeer(productJson) {
-    console.log(productJson);
     // store the beer in browser cache so we don't try it again
     if (localStorage.getItem('triedBeers') === null) {
         localStorage.setItem('triedBeers', productJson.name);    
@@ -103,6 +102,7 @@ function foundFreshBeer(productJson) {
 function resetTriedBeers() {
     if (confirm("Are you sure you want to reset all beers you've previously tried?")) {
         localStorage.removeItem('triedBeers');
+        triedBeers = { };
     }
 }
 
