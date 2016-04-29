@@ -22,6 +22,9 @@ a {
 /***********************************************
 * Layout 
 ***********************************************/
+html {
+    background-color: #e3e4f0;
+}
 .header-banner {
     display: block;
     height: 58px;
@@ -33,9 +36,10 @@ a {
     position: relative;
     width: 400px;
     margin: 50px auto;
-    background-color: #c2f4f4;
+    background-color: #fff;
     padding: 20px;
     border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 #beer-img {
     display: block;
@@ -50,7 +54,7 @@ a {
 }
 #beer-caption {
     margin: 5px 0 30px;
-    text-align: center;
+    padding: 0 40px;
 }
 #loading-spinner {
     position: absolute;
@@ -58,7 +62,7 @@ a {
     width: 100%;
     height: 100%;
     margin: -20px 0 0 -20px;
-    background-color: rgba(178, 178, 178, 0.61);
+    background-color: rgba(224, 224, 224, 0.97);
     z-index: 1000;
     border-radius: 5px;
 }

@@ -7,7 +7,7 @@ var pagesTried = [];
 
 // objects keys are hashed in js, so have one property per tried beer for O(1)-ish lookup
 // e.g. { 'beer1: true','beer2': true ... }
-var triedBeers = {}; 
+var triedBeers = { }; 
 
 $(document).ready(function () {
    hideLoadingSpinner(); 
@@ -17,33 +17,28 @@ $(document).ready(function () {
 function beerMeClicked() {
     showLoadingSpinner();
     
-    // get private api key from server
-    loadApiKey();
-    
-    // load tried beers from local browser cache
-    if (localStorage.getItem('triedBeers') !== null) {
-        var triedBeersArr = localStorage.getItem('triedBeers').split(',');
-        for (var i = 0; i < triedBeersArr.length; i += 1) {
-            triedBeers[triedBeersArr[i]] = true;
-        }
-    }
-    
-    // load first page to get total num pages, then try random pages until new beer found
-    $.ajax({
-        url: 'https://lcboapi.com/stores/' + storeId + '/products?page=1',
-        headers: { 'Authorization': 'Token ' + lcboApiKey }
-    }).then(function (jsonResponse) {
-        totalPages = jsonResponse.pager.total_pages;
-        tryRandomPage();
-    });
-}
-
-function loadApiKey() {
     $.ajax({
         type: 'GET',
         url: 'lcbo_api_key.php'
     }).then(function (data) {
         lcboApiKey = data;
+
+        // load tried beers from local browser cache
+        if (localStorage.getItem('triedBeers') !== null) {
+            var triedBeersArr = localStorage.getItem('triedBeers').split(',');
+            for (var i = 0; i < triedBeersArr.length; i += 1) {
+                triedBeers[triedBeersArr[i]] = true;
+            }
+        }
+
+        // load first page to get total num pages, then try random pages until new beer found
+        $.ajax({
+            url: 'https://lcboapi.com/stores/' + storeId + '/products?page=1',
+            headers: { 'Authorization': 'Token ' + lcboApiKey }
+        }).then(function (jsonResponse) {
+            totalPages = jsonResponse.pager.total_pages;
+            tryRandomPage();
+        });
     });
 }
 
@@ -73,7 +68,7 @@ function checkResponseForFreshBeer(jsonResponse) {
     shuffleArray(jsonResponse.result);
     for (var i = 0; i < jsonResponse.result.length; i += 1) {
         if (jsonResponse.result[i].primary_category === 'Beer'
-                && !jsonResponse.result[i].discontinued
+                && jsonResponse.result[i].quantity > 0
                 && triedBeers[jsonResponse.result[i].name] !== true) {
             foundFreshBeer(jsonResponse.result[i]);
             return;
@@ -95,8 +90,8 @@ function foundFreshBeer(productJson) {
     
     // update UI with beer info and photo
     $('#beer-name')[0].innerHTML = productJson.name;
-    $('#beer-caption')[0].innerHTML = '$' + (productJson.price_in_cents / 100).toFixed(2) + ' / ' + productJson.package_unit_type;
-    $('#beer-caption')[0].innerHTML += ', ' + productJson.alcohol_content / 100 + '% alcohol';
+    $('#beer-caption')[0].innerHTML = '<span class="float-left">$' + (productJson.price_in_cents / 100).toFixed(2) + "</span>";
+    $('#beer-caption')[0].innerHTML += '&nbsp;<span class="float-right">' + productJson.alcohol_content / 100 + '% alcohol</span>';
     $('#beer-img')[0].innerHTML = "";
     if (productJson.image_url !== null) {
         $('#beer-img')[0].innerHTML = '<img src="' + productJson.image_url + '" class="full-width" alt="' + productJson.name + '">';
@@ -121,7 +116,7 @@ function hideLoadingSpinner() {
 // randomly shuffles array in place, O(n)
 // http://stackoverflow.com/a/12646864
 function shuffleArray(array) {
-    for (var i = array.length - 1; i > 0; i--) {
+    for (var i = array.length - 1; i > 0; i -= 1) {
         var j = Math.floor(Math.random() * (i + 1));
         var temp = array[i];
         array[i] = array[j];
