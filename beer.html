@@ -3,22 +3,37 @@
     <title>Beer Me | Stuart Douglas</title>
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0"/>
     
-    <link href="beer.css" rel="stylesheet" type="text/css">
+    <link href="css/beer.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Source+Serif+Pro:400,600" rel="stylesheet" type="text/css">
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-    <script src="beer.js"></script>
+    <script src="js/beer.js"></script>
 </head>
 
 <body>
     <div class="header-banner">
-        <a href="http://stuartdouglas.ca/index.html">Back to Portfolio</a>
+        <a class="float-left" href="http://stuartdouglas.ca/index.html">
+            <div class="header-button">
+                <p>&larr; Back to Portfolio</p>
+            </div>
+        </a>
+        
+        <a class="float-right" href="" onclick="resetTriedBeers()">
+            <div class="header-button">
+                <p>Reset Tried Beers</p>
+            </div>
+        </a>
     </div>
     
     <div class="beer-me-container">
-        <h1 id="beer-name">Moosehead</h1>
-        <img id="beer-img" src="beer_icon.png" alt="Generic beer can">
-        <p id="beer-caption">5% Alcohol, 255ml, $2.99/can</p>
+        <div id="loading-spinner">
+            <h1 id="loading-text">Loading...</h1>
+            <img id="loading-image" src="images/loading.gif" alt="Loading..."/>
+        </div>
+        
+        <h1 id="beer-name">&nbsp;</h1>
+        <div id="beer-img"></div>
+        <p id="beer-caption">&nbsp;</p>
         <a class="highlighted-button" onclick="beerMeClicked()">Beer Me!</a>
     </div>
 </body>

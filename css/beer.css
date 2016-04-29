@@ -12,8 +12,8 @@ body, p {
 /***********************************************
 * Text
 ***********************************************/
-body {
-    font-family: 'Source Sans', Helvetica, Arial, sans-serif;
+h1, h2, h3, h4, h5, h6, p, a {
+    font-family: 'Source Serif Pro', 'Helvetica', 'Arial', sans-serif;
 }
 a {
     text-decoration: none;
@@ -24,12 +24,13 @@ a {
 ***********************************************/
 .header-banner {
     display: block;
-    height: 2.5em;
+    height: 58px;
     width: 100%;
     padding: 0.75em 30px;
     background-color: #8ff0c4;
 }
 .beer-me-container {
+    position: relative;
     width: 400px;
     margin: 50px auto;
     background-color: #c2f4f4;
@@ -39,21 +40,52 @@ a {
 #beer-img {
     display: block;
     margin: 0 auto;
-    width: 90%;
+    width: 280px;
+    height: 372px;
+    background-image: url(../images/beer_icon.png);
+    border: none;
 }
 #beer-name {
     text-align: center;
 }
 #beer-caption {
-    margin: 5px 0 20px;
+    margin: 5px 0 30px;
     text-align: center;
+}
+#loading-spinner {
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: -20px 0 0 -20px;
+    background-color: rgba(178, 178, 178, 0.61);
+    z-index: 1000;
+    border-radius: 5px;
+}
+#loading-text {
+    text-align: center;
+    margin-top: 200px;
+}
+#loading-image {
+    display: block;
+    width: 50px;
+    margin: 0 auto;
+}
+.float-left {
+    float: left;
+}
+.float-right {
+    float: right;
+}
+.full-width {
+    width: 100%;
 }
 
 /***********************************************
 * Button 
 ***********************************************/
 .highlighted-button {
-    width: 80%;
+    width: 100%;
     display: block;
     margin: 0 auto;
     text-align: center;
@@ -69,4 +101,11 @@ a {
     background-color: #87d4b1;
     color: #555555;
     border-color: #555555;
+}
+.header-button {
+    background-color: #ddd;
+    border-radius: 2px;
+    border: 2px solid #bbb;
+    display: inline-block;
+    padding: 5px;
 }
