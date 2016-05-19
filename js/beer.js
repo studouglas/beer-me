@@ -1,5 +1,5 @@
 'use strict';
-var LOW_QUANTITY_THRESHOLD = 5; // if at most 5 beers remain, 
+var LOW_QUANTITY_THRESHOLD = 5; // low stock if at most 5 beers remain
 var HIGH_ALCOHOL_PERCENTAGE = 650; // anything at least 6.5% is considered high alcohol
 
 var LCBO_API_KEY = 'MDoxMTljMTZhNi0wZDg3LTExZTYtOWMxYi0xZjczNjZmZmI3NDc6aGlpbW5qa0FvRHFIVG1pSEhvdFRhQTBWdlFya3JVek90Q1pN';
@@ -13,18 +13,16 @@ var currentPageIndex = 0;
 // objects keys are hashed in JS, so have one property per tried beer for fast lookup
 // e.g. { 'beer1: true','beer2': true ... }
 var triedBeers = { }; 
+var last10Beers = [ ]; // keep array of last 10 for fast updating of list
+
+$(document).ready(function() {
+    loadTriedBeers();
+    reloadTriedBeers();
+});
 
 // finds a random beer that hasn't been tried yet
 function beerMeClicked() {
     showLoadingSpinner();
-    
-    // load tried beers from local browser cache
-    if (localStorage.getItem('triedBeers') !== null) {
-        var triedBeersArr = localStorage.getItem('triedBeers').split(',');
-        for (var i = 0; i < triedBeersArr.length; i += 1) {
-            triedBeers[triedBeersArr[i]] = true;
-        }
-    }
 
     // load first page to get total num pages, then try random pages until new beer found
     $.ajax({
@@ -40,6 +38,22 @@ function beerMeClicked() {
         
         tryNextRandomPage();
     });
+}
+
+function loadTriedBeers() {
+    // load tried beers from local browser cache
+    if (localStorage.getItem('triedBeers') !== null) {
+        var triedBeersArr = localStorage.getItem('triedBeers').split('-');
+        var beersAddedToLast10 = 0;
+        for (var i = 0; i < triedBeersArr.length; i += 1) {
+            var beerNameAndDate = JSON.parse(triedBeersArr[i]);
+            triedBeers[beerNameAndDate.beerName] = beerNameAndDate.triedDate;
+            if (i >= triedBeersArr.length - 10) {
+                last10Beers[beersAddedToLast10] = JSON.parse(triedBeersArr[i]);
+                beersAddedToLast10++;
+            }
+        }
+    }
 }
 
 // fetches products from a random page, when done check for a new one
@@ -85,10 +99,11 @@ function checkResponseForFreshBeer(jsonResponse) {
 // update UI with our new beer, and some stats about it
 function foundFreshBeer(productJson) {
     // store the beer in browser cache so we don't try it again
+    var nameAndDateStr = JSON.stringify({'beerName': productJson.name, 'triedDate': dateToFormattedString(new Date())});
     if (localStorage.getItem('triedBeers') === null) {
-        localStorage.setItem('triedBeers', productJson.name);    
+        localStorage.setItem('triedBeers', nameAndDateStr);    
     } else {
-        localStorage.setItem('triedBeers', localStorage.getItem('triedBeers') + ',' + productJson.name);    
+        localStorage.setItem('triedBeers', localStorage.getItem('triedBeers') + '-' + nameAndDateStr);    
     }
     
     var redIfLowQuantity = productJson.quantity <= LOW_QUANTITY_THRESHOLD ? ' red-text' : '';
@@ -104,6 +119,16 @@ function foundFreshBeer(productJson) {
     }
     
     hideLoadingSpinner();
+    reloadTriedBeers();
+}
+
+function reloadTriedBeers() {
+    $('.tried-beers-container')[0].style.visibility = 'visible';
+    loadTriedBeers();
+    $('#tried-beers-list')[0].innerHTML = last10Beers.length > 0 ? '' : '<p>You haven\'t tried any beers!</p>';
+    for (var i = last10Beers.length - 1; i >= 0; i -= 1) {
+        $('#tried-beers-list')[0].innerHTML += '<p>' + (last10Beers.length - i) + '. ' + last10Beers[i].beerName + ' --- ' + last10Beers[i].triedDate + '</p>';
+    }
 }
 
 function resetTriedBeers() {
@@ -134,4 +159,13 @@ function shuffleArray(array) {
         array[j] = temp;
     }
     return array;
+}
+
+// convert date to specified format
+// http://stackoverflow.com/a/3067896/1176865
+function dateToFormattedString(date) {
+   var yyyy = date.getFullYear().toString();
+   var mm = (date.getMonth() + 1).toString(); // getMonth() is zero-based
+   var dd  = date.getDate().toString();
+   return yyyy + '/' + (mm[1] ? mm : "0" + mm[0]) + '/' + (dd[1] ? dd: "0" + dd[0]); // padding
 }

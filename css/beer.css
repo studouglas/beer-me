@@ -57,6 +57,16 @@ html {
     border-radius: 5px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
+.tried-beers-container {
+/*    position: relative;*/
+/*    top: 500px;*/
+    width: 400px;
+    margin: 50px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
 #beer-img {
     display: block;
     margin: 0 auto;
@@ -98,6 +108,24 @@ html {
 /***********************************************
 * Button 
 ***********************************************/
+.button {
+    width: 100%;
+    display: block;
+    margin: 15px auto 0;
+    text-align: center;
+    font-size: 22px;
+    line-height: 1.75em;
+    border-radius: 3px;
+    background-color: #f4f4f4;
+    color: #388165;
+    border: 3px solid #388165;
+}
+.button:hover {
+    cursor: pointer;
+    background-color: #cccccc;
+    color: #555555;
+    border-color: #555555;
+}
 .highlighted-button {
     width: 100%;
     display: block;
